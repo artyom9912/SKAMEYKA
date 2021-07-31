@@ -1,5 +1,6 @@
 from dash.dependencies import Input, Output, State
 from app import appDash
+import dash
 import dash_html_components as html
 from app import dbDF
 import pandas as pd
@@ -105,3 +106,5 @@ def render_content(tab):
         return html.Div([
             ProjectsTable()
         ], className='db')
+
+

@@ -43,7 +43,7 @@ def DATABASE():
                 },
                 style_cell={'font-family': 'Rubik', 'text-align': 'left', 'width':'auto',
                             'border': '2px solid white', 'background-color': '#f7f7f7',
-                            'font-size': '14px', 'padding-left':'12px'},
+                            'font-size': '14px', 'padding-left':'12px', 'cursor':'default'},
                 style_header={'background-color': '#313131', 'color': 'white', 'height': '35px','z-index':'5',
                               'border': '0px solid white', 'font-family': 'Rubik', 'font-size': '14px'},
                 style_data_conditional=[
