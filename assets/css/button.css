@@ -1,0 +1,56 @@
+.button {
+    border: none;
+    color: #000000;
+    background-color: rgba(0,0,0,0);
+    font-family: "Noah Regular", monospace;
+    padding: 15px 32px;
+    text-align: center;
+    height: 72px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    z-index: 1;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+.button .icon1, .icon2 {
+    float: left;
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    transition: all 0.1s ease-in;
+}
+.button:hover{
+    background-color: #F2F3F4;
+}
+.button:hover .icon1{
+    transform: rotate(60deg);
+}
+.button:hover .icon2{
+    background: url('../img/exit2.png') no-repeat;
+    width: 29px;
+
+}
+.icon1{
+    background: url('../img/update-arrows.png') no-repeat;
+}
+.icon2{
+    background: url('../img/exit.png') no-repeat;
+    z-index: 5;
+}
+.button .span {
+    float: left;
+    width: 20px;
+    height: 20px;
+}
+.ico1{background: url('../img/layers.png') no-repeat;}
+.ico2{background: url('../img/calendar.png') no-repeat;}
+.ico3{background: url('../img/rubik2.png') no-repeat;}
+.ico4{background: url('../img/crown.png') no-repeat;}
+.option .ico1, .ico2, .ico3, .ico4 {
+    float: left;
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    transition: all 0.1s ease-in;
+}

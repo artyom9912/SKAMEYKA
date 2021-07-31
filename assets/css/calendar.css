@@ -1,0 +1,17 @@
+.calendar{
+    font-family: "Noah Regular", monospace;
+    background-color: white;
+    box-shadow: 0 5px 13px #d2d2d2;
+    border-radius: 20px;
+    width: 680px;
+    height: 100%;
+    z-index: 5;
+    padding: 0;
+}
+.dash-cell, .dash-header{
+    /*border-radius: 25px;*/
+    width: 35px;
+}
+.dash-header{
+
+}

@@ -1,0 +1,80 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+
+.desk{
+    width: 75%;
+    height: 100%;
+    z-index: 5;
+    padding: 10px 0 20px 25px;
+}
+.filter{
+    top: 0;
+    width: fit-content;
+    height: 200px;
+    color: #8d8d8d;
+    padding-left: 16px;
+    font-family: "Noah Regular", monospace;
+}
+.grid{
+    padding: 22px 0;
+    grid-template-columns: 250px 250px 250px;
+    grid-auto-rows: 130px;
+    column-gap: 35px;
+    row-gap: 25px;
+    overflow-y: auto;
+    grid-auto-flow: row;
+    max-height: 100%;
+    display: grid;
+}
+.card{
+    background-color: #f3f3f3;
+    text-align: left;
+    padding-left: 15px;
+    padding-top: 15px;
+    border: none;
+    border-radius: 0px;
+    border-left: #1d1d1d solid 8px;
+    box-shadow: 3px 3px 5px #cdcdcd;
+    width: inherit;
+    height: inherit;
+    cursor: pointer;
+    transition: all 0.1s ease-in, border-left-color 0s ease-in;
+}
+
+.card:hover{
+    border-left: #40e0b3 solid 12px;
+    background-image: url("../img/prjActive.png");
+}
+.card:hover .prjName{
+    margin-left: 5px;
+}
+.num{
+    font-family: "Noah Regular", monospace;
+    font-size: 28px;
+    height: 30px;
+
+    vertical-align: bottom;
+}
+.small{
+    font-size: 18px;
+}
+.prjStage{
+    font-size: 14px;
+    font-family: "Noah Regular", monospace;
+    line-height: 0.5em;
+    transition: all 0.1s ease-in;
+}
+.prjName{
+    font-family: "Noah Bold", monospace;
+    font-size: 20px;
+    transition: all 0.1s ease-in;
+}
+.prjInfo{
+    margin-top: 22px;
+    vertical-align: bottom;
+    height: fit-content;
+}
+.dim{
+    color: #8d8d8d;
+}
+

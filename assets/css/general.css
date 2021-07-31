@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400&display=swap');
+@font-face {
+    font-family: 'Noah Regular';
+    src: url("../fonts/Noah-Regular.ttf");
+}
+@font-face {
+    font-family: 'Noah Bold';
+    src: url("../fonts/Noah-Bold.ttf");
+}
+@font-face {
+    font-family: 'Futura PT Light';
+    src: url("../fonts/FuturaPT-Light.ttf");
+}
+@font-face {
+    font-family: 'Bahnschrift SemiBold';
+    src: url("../fonts/bahnschrift.ttf");
+}
+.focus{ height: 75%}
+*.button:active, .button:focus, .button:active:focus, .button.active:focus {
+        outline: none !important;
+    }
+.side{
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+body,html{
+    height: 100%;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+.menu{
+    width: 20%;
+    /*min-width: 300px;*/
+    z-index: 5;
+    text-align: center;
+    background: linear-gradient(183deg, rgba(0,0,0,1) 0%, rgb(100, 100, 100) 100%);
+}
+.main{
+    width: 80%;
+    background-color: #F2F3F4;
+}
+.header{
+    background-color: white;
+    position: absolute;
+    top: 0;
+    z-index: 0;
+    height: 72px;
+    width: inherit;
+    color: black;
+    vertical-align: middle;
+    padding-left: 24px;
+    box-shadow: 0px 5px 10px #dbdbdb;
+}
+.banner{
+    margin-top: 10px;
+}
+.logo{
+    /*height: 50px;*/
+    /*width: auto;*/
+}
+.titleBox{
+    padding-left: 18px;
+    display: inline-block;
+    vertical-align: middle;
+    padding-top: 5px;
+}
+.title, .subtitle{
+    line-height: 0.8em;
+}
+.title{
+    font-family: "Bahnschrift SemiBold", monospace;
+    font-size: 30px;
+}
+.subtitle{
+    font-family: "Noah Regular", monospace;
+}
+.buttons{
+    top: -5px;
+    right: 0;
+    position: absolute;
+    margin: 0;
+}
+.userBox{
+    margin-top:35%;
+    color: white;
+}
+.userBox>img{
+    width: 100px;
+}
+.userName{
+    font-family: "Noah Regular", monospace;
+    font-size: 26px;
+    margin-top: 15px;
+}
+.userRole{
+    font-family: "Noah Regular", monospace;
+    font-size: 16px;
+    line-height: 0.8em;
+    color: #8d8d8d;
+}
+.options{
+    margin-top: 42px;
+    text-align: left;
+    height: 100%;
+}
+.option{
+    width: 100%;
+    padding-left: 22%;
+    text-align: left;
+    color: white;
+    height: 50px;
+    transition: padding-left 0.1s ease-in;
+}
+.option:hover{ background-color:rgba(256,256,256,0.15); padding-left: 24%}
+.content{
+    padding-top: 110px;
+    padding-left: 40px;
+    /*background-color: aquamarine;*/
+    height: 100%;
+}
+.name{
+    font-family: "Futura PT Light", monospace;
+    font-size: 32px;
+    margin-bottom: 13px;
+}
+.cloud{
+    font-family: "Noah Regular", monospace;
+    background-color: white;
+    box-shadow: 0px 5px 13px #d2d2d2;
+    border-radius: 8px;
+    padding: 5px 25px;
+    z-index: 1;
+    width: fit-content;
+}
+.tail{
+    padding-left: 6px;
+    font-family: "Noah Regular", monospace;
+    font-size: 12px;
+}
+
+.number{
+    font-family: "Noah Regular", monospace;
+    font-size: 28px;
+    padding-right: 58px;
+}
+.line{
+    display: inline-block;
+    vertical-align:top;
+    margin-right: 25px;
+}
+.line-wrap{
+    vertical-align: top;
+    margin-bottom: 22px;
+}
+
+::-webkit-scrollbar
+{
+	width: 8px;
+	background-color: #F5F5F5;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+	background-color: #d9d9d9;
+}
+.dropdown-toggle, .dropdown-item{width: 140px;font-family: Rubik, monospace; padding-left: 20px}
+.dropdown-toggle{padding-left: 0px; text-align: left}
+.dropdown-toggle:focus,.dropdown-item:focus {
+    /*border-color: #66afe9;*/
+    outline: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    background-color: #f5f5f5;
+}
+.dropdown-item:focus{
+    background-color: #11e9be;
+}
+.dropdown-toggle:hover{
+    background-color: #f5f5f5;
+}
