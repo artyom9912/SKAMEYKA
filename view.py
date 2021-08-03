@@ -152,6 +152,7 @@ def CALENDAR():
                     columns=[{"name": i, "id": i} for i in df.columns],
                     id='CalendarTable',
                     css='.dash-cell{background-color: #37bc8d !important; }',
+                    editable=True,
                     style_table={
                         # 'border': '1px solid red',
                         'overflow': 'hidden',
