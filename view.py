@@ -19,7 +19,6 @@ Years= [
 ]
 
 def LAYOUT(username, role):
-    default = DATABASE()
     layout = html.Div([dcc.Location(id='url', refresh=False),
         dbc.Row([
             html.Div([
@@ -64,7 +63,7 @@ def LAYOUT(username, role):
                 ], className='header'),
                 #-------------CONTENT-------------#
                 # dcc.Loading([
-                html.Div(default,
+                html.Div([],
                 className='content', id='content')
                 # ], color='grey', type='circle'),
             ], className='side main')
@@ -151,6 +150,8 @@ def CALENDAR():
                 dash_table.DataTable(
                     data=df.to_dict('records'),
                     columns=[{"name": i, "id": i} for i in df.columns],
+                    id='CalendarTable',
+                    css='.dash-cell{background-color: #37bc8d !important; }',
                     style_table={
                         # 'border': '1px solid red',
                         'overflow': 'hidden',
@@ -178,7 +179,7 @@ def CALENDAR():
                         {
                             'if': {'column_id': c},
                             'textAlign': 'left',
-                            'background-color': '#F0F0F0',
+                            'background-color': '#eaeaea',
                             'padding-left': '25px'
                         } for c in ['НАЗВАНИЕ ПРОЕКТА']
                     ],

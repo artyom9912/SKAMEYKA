@@ -61,7 +61,7 @@ def UsersTable():
 
             style_as_list_view=True,
             style_data_conditional=style_data_conditional,
-            # row_selectable='single',
+            row_selectable='single',
             # derived_virtual_selected_rows=[]
         )
     ])
@@ -87,48 +87,51 @@ def ProjectsTable():
 
 @appDash.callback(
     Output("UsersTable", "style_data_conditional"),
-    Input("UsersTable", "derived_virtual_selected_row_ids"),
+    Input("UsersTable", "active_cell"),
 )
 def style_selected_rows(sel_rows):
-    if sel_rows is None:
-        return dash.no_update
-    val = [
-        {"if": {"filter_query": "{{id}} ={}".format(i)}, "backgroundColor": "rgba(0, 116, 217, 0.3)",}
-        for i in sel_rows
-    ]
-    return style_data_conditional+val
 
-@appDash.callback(
-    Output("ProjectsTable", "style_data_conditional"),
-    Input("ProjectsTable", "derived_virtual_selected_row_ids"),
-)
-def style_selected_rows(sel_rows):
-    print(sel_rows)
     if sel_rows is None:
         return dash.no_update
     val = [
-        {"if": {"filter_query": "{{id}} ={}".format(i)}, "backgroundColor": "rgba(0, 116, 217, 0.3)",}
+        {"if": {"filter_query": "{{id}} ={}".format(sel_rows['row_id'])}, "backgroundColor": "rgba(0, 116, 217, 0.3)",}
         for i in sel_rows
     ]
     print(val)
     return style_data_conditional+val
+    # return [sel_rows['row_id']]
 
-@appDash.callback(
-    Output("ProjectsTable", "derived_virtual_selected_row_ids"),
-    Input("ProjectsTable", "active_cell"),
-)
-def select_cell(cell):
-    print(cell)
-    if cell is None:
-        return dash.no_update
-    return [cell['row_id']]
-
-@appDash.callback(
-    Output("UsersTable", "derived_virtual_selected_row_ids"),
-    Input("UsersTable", "active_cell"),
-)
-def select_cell(cell):
-    print(cell)
-    if cell is None:
-        return dash.no_update
-    return [cell['row_id']]
+# @appDash.callback(
+#     Output("ProjectsTable", "style_data_conditional"),
+#     Input("ProjectsTable", "derived_virtual_selected_row_ids"),
+# )
+# def style_selected_rows(sel_rows):
+#     print(sel_rows)
+#     if sel_rows is None:
+#         return dash.no_update
+#     val = [
+#         {"if": {"filter_query": "{{id}} ={}".format(i)}, "backgroundColor": "rgba(0, 116, 217, 0.3)",}
+#         for i in sel_rows
+#     ]
+#     print(val)
+#     return style_data_conditional+val
+#
+# @appDash.callback(
+#     Output("ProjectsTable", "derived_virtual_selected_row_ids"),
+#     Input("ProjectsTable", "active_cell"),
+# )
+# def select_cell(cell):
+#     print(cell)
+#     if cell is None:
+#         return dash.no_update
+#     return [cell['row_id']]
+#
+# @appDash.callback(
+#     Output("UsersTable", "derived_virtual_selected_row_ids"),
+#     Input("UsersTable", "active_cell"),
+# )
+# def select_cell(cell):
+#     print(cell)
+#     if cell is None:
+#         return dash.no_update
+#     return [cell['row_id']]
