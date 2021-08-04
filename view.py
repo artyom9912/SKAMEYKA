@@ -1,7 +1,10 @@
+import datetime
+
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash_table
+from datetime import date
 import plotly.graph_objects as go
 import pandas as pd
 from view_specials import DATABASE
@@ -144,6 +147,13 @@ def CALENDAR():
         html.Div('МОДУЛЬ КАЛЕНДАРЬ', className='name'),
         html.Div([
             html.Div(['Июль', html.Span('2021 год', className='tail')], className='cloud number line'),
+            dcc.DatePickerSingle(
+                date=datetime.datetime.now(),
+                className='cloud line nopad',
+                style=dict(outline='none', border='none'),
+                display_format='DD.MM.YYYY',
+                first_day_of_week=1,
+            )
             ], className='line-wrap'),
         html.Div([
             html.Div([
@@ -152,6 +162,7 @@ def CALENDAR():
                     columns=[{"name": i, "id": i} for i in df.columns],
                     id='CalendarTable',
                     css='.dash-cell{background-color: #37bc8d !important; }',
+                    editable=True,
                     style_table={
                         # 'border': '1px solid red',
                         'overflow': 'hidden',

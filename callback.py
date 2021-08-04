@@ -21,7 +21,7 @@ from datatables import UsersTable, ProjectsTable
     Input('YearFilter', 'value'),
     prevent_initial_call = True
 )
-def updateDB(user, project, customer, day, month, year):
+def update_db(user, project, customer, day, month, year):
     from app import dbDF
     groupby = []
     df = dbDF
@@ -95,8 +95,9 @@ def cleanFilter(n_clicks):
     return None,None,None,None,None,None
 
 
-@appDash.callback(Output('tabs-content', 'children'),
-              Input('tabs', 'value'))
+@appDash.callback(
+    Output('tabs-content', 'children'),
+    Input('tabs', 'value'))
 def render_content(tab):
     if tab == 'tab-c':
         return html.Div([
@@ -106,5 +107,7 @@ def render_content(tab):
         return html.Div([
             ProjectsTable()
         ], className='db')
+
+
 
 

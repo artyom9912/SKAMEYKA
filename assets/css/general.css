@@ -19,6 +19,9 @@
 *.button:active, .button:focus, .button:active:focus, .button.active:focus {
         outline: none !important;
     }
+* button:active, button:focus, button:active:focus, button.active:focus {
+        outline: none !important;
+    }
 .side{
     height: 100vh;
     padding: 0;

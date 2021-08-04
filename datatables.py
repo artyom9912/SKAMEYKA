@@ -54,14 +54,13 @@ def UsersTable():
         dash_table.DataTable(
             data = usersDF.to_dict('records'),
             columns=[{"name": i, "id": i} for i in usersDF.columns],
-            id='UsersTable',
+            id='AdmTable',
             style_table = style_table,
             style_cell= style_cell,
             style_header=style_header,
-
             style_as_list_view=True,
             style_data_conditional=style_data_conditional,
-            row_selectable='single',
+            # row_selectable='single',
             # derived_virtual_selected_rows=[]
         )
     ])
@@ -73,7 +72,7 @@ def ProjectsTable():
     content = html.Div([
         dash_table.DataTable(
             data=prjsDF.to_dict('records'),
-            id='ProjectsTable',
+            id='AdmTable',
             columns=[{"name": i, "id": i} for i in prjsDF.columns],
             style_table=style_table,
             style_cell=style_cell,
@@ -86,52 +85,35 @@ def ProjectsTable():
     return content
 
 @appDash.callback(
-    Output("UsersTable", "style_data_conditional"),
-    Input("UsersTable", "active_cell"),
+    Output("AdmTable", "style_data_conditional"),
+    Input("AdmTable", "active_cell"),
 )
 def style_selected_rows(sel_rows):
-
     if sel_rows is None:
         return dash.no_update
     val = [
         {"if": {"filter_query": "{{id}} ={}".format(sel_rows['row_id'])}, "backgroundColor": "rgba(0, 116, 217, 0.3)",}
         for i in sel_rows
     ]
-    print(val)
     return style_data_conditional+val
     # return [sel_rows['row_id']]
 
-# @appDash.callback(
-#     Output("ProjectsTable", "style_data_conditional"),
-#     Input("ProjectsTable", "derived_virtual_selected_row_ids"),
-# )
-# def style_selected_rows(sel_rows):
-#     print(sel_rows)
-#     if sel_rows is None:
-#         return dash.no_update
-#     val = [
-#         {"if": {"filter_query": "{{id}} ={}".format(i)}, "backgroundColor": "rgba(0, 116, 217, 0.3)",}
-#         for i in sel_rows
-#     ]
-#     print(val)
-#     return style_data_conditional+val
-#
-# @appDash.callback(
-#     Output("ProjectsTable", "derived_virtual_selected_row_ids"),
-#     Input("ProjectsTable", "active_cell"),
-# )
-# def select_cell(cell):
-#     print(cell)
-#     if cell is None:
-#         return dash.no_update
-#     return [cell['row_id']]
-#
-# @appDash.callback(
-#     Output("UsersTable", "derived_virtual_selected_row_ids"),
-#     Input("UsersTable", "active_cell"),
-# )
-# def select_cell(cell):
-#     print(cell)
-#     if cell is None:
-#         return dash.no_update
-#     return [cell['row_id']]
+@appDash.callback(
+    Output("AdmTable", "derived_virtual_selected_row_ids"),
+    Input("AdmTable", "active_cell"),
+)
+def select_cell(cell):
+    if cell is None:
+        return dash.no_update
+    return [cell['row_id']]
+
+@appDash.callback(
+    Output("EditButton", "style"),
+    Input("AdmTable", "active_cell"),
+    prevent_initial_call = True
+)
+def show_button(cell1):
+    if cell1 is None:
+        return {'display':'none'}
+    return {'display':'block'}
+

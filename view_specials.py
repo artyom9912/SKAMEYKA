@@ -94,6 +94,9 @@ def ADMINPAGE():
                 dcc.Tab(label='Проекты', value='tab-p', className='custom-tab', selected_className='custom-tab--selected'),
             ], parent_className='custom-tabs', className='custom-tabs-container',),
         ], className='cloud tablo'),
-        dcc.Loading([html.Div(id='tabs-content')],color='grey', type='circle')
+        dcc.Loading([html.Div(id='tabs-content')],color='grey', type='circle'),
+        html.Button([
+            html.Span([], className='iconEdit'), 'Редактировать'
+        ],id='EditButton', className='button edit cloud', style={'display':'none'}),
     ])
     return content

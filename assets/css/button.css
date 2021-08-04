@@ -47,10 +47,19 @@
 .ico2{background: url('../img/calendar.png') no-repeat;}
 .ico3{background: url('../img/rubik2.png') no-repeat;}
 .ico4{background: url('../img/crown.png') no-repeat;}
-.option .ico1, .ico2, .ico3, .ico4 {
+.option .ico1, .ico2, .ico3, .ico4, .iconEdit {
     float: left;
     width: 24px;
     height: 24px;
     margin-right: 10px;
     transition: all 0.1s ease-in;
+}
+.iconEdit{
+    background: url('../img/edit.png') no-repeat;
+}
+.edit{
+
+    margin-top: 20px;
+    padding: 10px 32px 10px 20px !important;
+    height: fit-content !important;
 }

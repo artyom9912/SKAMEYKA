@@ -5,6 +5,7 @@
     border-radius: 20px;
     width: 680px;
     height: 100%;
+    margin-top: 4px;
     z-index: 5;
     padding: 0;
 }
@@ -18,5 +19,18 @@
 .calendar>td:hover{
     background-color: white !important;
 }
+
 .calendar > * .dash-cell:hover{background-color: #eaeaea !important; cursor: pointer }
 .calendar > * .column-0:hover{ cursor: default }
+.dash-cell > * .input-active{text-align: center !important;}
+.SingleDatePickerInput {border: none !important;}
+.DateInput_input {
+    cursor: pointer !important;
+    text-align: center !important;
+    padding: 15px 5px 8px 0px;
+    height: 42px !important;
+    line-height: 0;
+
+}
+.DayPicker {box-shadow: 0 5px 10px rgba(0,0,0,0.3);}
+/*.nopad{padding-left: 2px !important;}*/
