@@ -40,6 +40,7 @@ def DATABASE():
                     'border': '0px solid white',
                     'borderRadius': '10px',
                     'minWidth': '100%',
+                    'transition':'all 0.12s ease-in-out',
                 },
                 style_cell={'font-family': 'Rubik', 'text-align': 'left', 'width':'auto',
                             'border': '2px solid white', 'background-color': '#f7f7f7',

@@ -8,6 +8,7 @@
     height: 100%;
     z-index: 5;
     padding: 0;
+    transition: all 0.12s ease-in-out;
 }
 .dash-spreadsheet .row {
   flex-wrap: nowrap;

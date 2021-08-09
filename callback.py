@@ -1,3 +1,5 @@
+import datetime
+from datetime import datetime as dt
 from dash.dependencies import Input, Output, State
 from app import appDash
 import dash
@@ -108,6 +110,17 @@ def render_content(tab):
             ProjectsTable()
         ], className='db')
 
+@appDash.callback(
+    Output('Datepicker', 'date'),
+    Output('EndDate', 'children'),
+    Input('Datepicker', 'date')
+)
+def SetDatesCalendar(start_date):
+    start_date = dt.strptime(start_date, '%Y-%m-%d')
 
+    weekday = int(start_date.weekday())
+    start = start_date + datetime.timedelta(days=-1*weekday)
+    end = start_date + datetime.timedelta(days=6-weekday)
+    return start, end.strftime('%d.%m.%Y')
 
 

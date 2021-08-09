@@ -21,6 +21,15 @@ Years= [
     dbc.DropdownMenuItem("Всё время"),
 ]
 
+def GetDayName(name):
+    if name == 'Monday' : return 'ПН'
+    elif name == 'Tuesday' : return 'ВТ'
+    elif name == 'Wednesday' : return 'СР'
+    elif name == 'Thursday' : return 'ЧТ'
+    elif name == 'Friday' : return 'ПТ'
+    elif name == 'Saturday' : return 'СБ'
+    elif name == 'Sunday' : return 'ВС'
+
 def LAYOUT(username, role):
     layout = html.Div([dcc.Location(id='url', refresh=False),
         dbc.Row([
@@ -119,6 +128,8 @@ def PROJECTDESK():
 def CALENDAR():
     colors = ['#393E46', '#00ADB5','#AAD8D3','#EEEEEE','#8ee8e4', '#F3F4ED', '#30475E','4CA1A3']
     df = pd.read_excel('cal.xlsx')
+    TODAY = datetime.date.today()
+    # print(TODAY.weekday())
     mart = df.fillna(0)
     mart['sum'] = mart['ПН']+mart['ВТ']+mart['СР']+mart['ЧТ']+mart['ПТ']+mart['СБ']+mart['ВС']
     mart = mart[['НАЗВАНИЕ ПРОЕКТА','sum']]
@@ -146,15 +157,19 @@ def CALENDAR():
         [
         html.Div('МОДУЛЬ КАЛЕНДАРЬ', className='name'),
         html.Div([
-            html.Div(['Июль', html.Span('2021 год', className='tail')], className='cloud number line'),
+            html.Div(['Август', html.Span('2021 год', className='tail')], className='cloud number line'),
             dcc.DatePickerSingle(
-                date=datetime.datetime.now(),
+                date=TODAY,
+                id = 'Datepicker',
                 className='cloud line nopad',
-                style=dict(outline='none', border='none'),
+                style=dict(outline='none', border='none', marginRight=5),
                 display_format='DD.MM.YYYY',
                 first_day_of_week=1,
-            )
+            ),
+            html.Div(['>'], className='line', style=dict(color='gray', padding='12px 2px',  marginRight=5, fontFamily='Rubik')),
+            html.Div([], id='EndDate', className='cloud line endDate', )
             ], className='line-wrap'),
+
         html.Div([
             html.Div([
                 dash_table.DataTable(
@@ -199,7 +214,7 @@ def CALENDAR():
                             'if': {'column_id': c},
                             'background-color': '#00ADB5',
                             # 'border': '2px solid #474747',
-                        } for c in ['ПТ']
+                        } for c in [GetDayName(TODAY.strftime("%A"))]
                     ]
                 )
             ], className='calendar line'),
