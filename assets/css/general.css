@@ -57,17 +57,23 @@ body,html{
 }
 .banner{
     margin-top: 10px;
+    height: 50px;
+    align-content: center;
+    display: block;
+    text-align: left;
 }
 .logo{
     /*height: 50px;*/
     /*width: auto;*/
 }
-.titleBox{
-    padding-left: 18px;
-    display: inline-block;
-    vertical-align: middle;
-    padding-top: 5px;
-}
+/*.titleBox{*/
+/*    padding-left: 18px;*/
+/*    display: inline-block;*/
+/*    vertical-align: middle;*/
+/*    padding-top: 0;*/
+/*    margin-bottom: 15px;*/
+/*    height: 50px;*/
+/*}*/
 .title, .subtitle{
     line-height: 0.8em;
 }

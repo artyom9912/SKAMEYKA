@@ -57,7 +57,8 @@ def LAYOUT(username, role):
             html.Div([
                 html.Div([
                     html.Div([
-                        html.Img(src='assets/img/logo.png', className='logo'),
+                        # html.Img(src='assets/img/logo.png', className='logo'),
+                        html.Div(className='logo', style=dict(width=50, height=50)),
                         html.Div([
                             html.Div(['ENTERPRISE'], className='title'),
                             html.Div(['recourse management'], className='subtitle')

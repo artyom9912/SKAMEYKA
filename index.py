@@ -103,7 +103,7 @@ def display_page(prjBtn, calBtn, dbBtn, admBtn):
     elif 'admBtn' in changed_id:
         content = ADMINPAGE()
     else:
-        content = CALENDAR()
+        content = PROJECTDESK()
     return content
 
 if __name__ == '__main__':
