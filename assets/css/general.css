@@ -156,11 +156,11 @@ body,html{
 }
 .line{
     display: inline-block;
-    vertical-align:top;
+    vertical-align:top !important;
     margin-right: 25px;
 }
 .line-wrap{
-    vertical-align: top;
+    vertical-align: top !important;
     margin-bottom: 22px;
 }
 

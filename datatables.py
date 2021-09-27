@@ -1,11 +1,12 @@
-import dash_core_components as dcc
-import dash_bootstrap_components as dbc
+import pandas as pd
 import dash_html_components as html
 import dash_table
 from dash.dependencies import Input, Output, State
-from app import appDash
+from app import appDash, con
 import dash
-from app import usersDF, prjsDF
+from sqlalchemy import create_engine
+# engine = create_engine('clickhouse://10.200.2.113/recengine')
+
 
 style_table={
                     'overflow': 'hidden',
@@ -49,13 +50,13 @@ style_data_conditional=[
 ]
 
 def UsersTable():
-    usersDF['ПОСЛЕДНЯЯ АКТИВНОСТЬ'] = usersDF['ПОСЛЕДНЯЯ АКТИВНОСТЬ'].map(lambda x: str(x).split(' ')[0])
+    # usersDF['ПОСЛЕДНЯЯ АКТИВНОСТЬ'] = usersDF['ПОСЛЕДНЯЯ АКТИВНОСТЬ'].map(lambda x: str(x).split(' ')[0])
     content = html.Div([
         dash_table.DataTable(
-            data = usersDF.to_dict('records'),
-            columns=[{"name": i, "id": i} for i in usersDF.columns],
+
+            # columns=[{"name": i, "id": i} for i in usersDF.columns],
             id='AdmTable',
-            style_table = style_table,
+            style_table =    style_table,
             style_cell= style_cell,
             style_header=style_header,
             fixed_rows={'headers': True, 'data': 0},
@@ -68,13 +69,13 @@ def UsersTable():
     return content
 
 def ProjectsTable():
-    prjsDF['ПОСЛЕДНЕЕ ДЕЙСТВИЕ'] = prjsDF['ПОСЛЕДНЕЕ ДЕЙСТВИЕ'].map(lambda x: str(x).split(' ')[0])
-    prjsDF['ШИФР'] = prjsDF['ШИФР'].map(lambda x: str(x).split(' ')[0])
+    # prjsDF['ПОСЛЕДНЕЕ ДЕЙСТВИЕ'] = prjsDF['ПОСЛЕДНЕЕ ДЕЙСТВИЕ'].map(lambda x: str(x).split(' ')[0])
+    # prjsDF['ШИФР'] = prjsDF['ШИФР'].map(lambda x: str(x).split(' ')[0])
     content = html.Div([
         dash_table.DataTable(
-            data=prjsDF.to_dict('records'),
+
             id='AdmTable',
-            columns=[{"name": i, "id": i} for i in prjsDF.columns],
+            # columns=[{"name": i, "id": i} for i in prjsDF.columns],
             style_table=style_table,
             style_cell=style_cell,
             style_header=style_header,
@@ -85,6 +86,26 @@ def ProjectsTable():
         )
     ])
     return content
+
+
+@appDash.callback(
+    Output("AdmTable", "data"),
+    Output("AdmTable", "columns"),
+    Input("tabs", "value"),
+)
+def AdmTableContent(tab):
+    if tab == 'tab-c':
+        df = pd.read_sql("SELECT id, fullname, admin, relevant  FROM skameyka.user_table", con)
+        df.columns = ['id','ИМЯ', 'АДМИН', 'СТАТУС']
+        df['АДМИН'] = df['АДМИН'].map(lambda x: 'Да' if x == 1 else 'Нет')
+        df['СТАТУС'] = df['СТАТУС'].map(lambda x: 'Актуальный' if x == 1 else 'Не актуальный')
+        return df.to_dict('records'), [{"name": i, "id": i} for i in df.columns]
+    elif tab == 'tab-p':
+        df = pd.read_sql("SELECT id, title, stage, code, customer, relevant  FROM skameyka.project_table", con)
+        df.columns = ['id', 'НАЗВАНИЕ', 'ЭТАП', 'ШИФР', 'ЗАКАЗЧИК', 'СТАТУС']
+        df['СТАТУС'] = df['СТАТУС'].map(lambda x: 'Актуальный' if x == 1 else 'Не актуальный')
+        return df.to_dict('records'), [{"name": i, "id": i} for i in df.columns]
+
 
 @appDash.callback(
     Output("AdmTable", "style_data_conditional"),
@@ -107,6 +128,7 @@ def style_selected_rows(sel_rows):
 def select_cell(cell):
     if cell is None:
         return dash.no_update
+    print([cell['row_id']])
     return [cell['row_id']]
 
 @appDash.callback(
@@ -117,5 +139,5 @@ def select_cell(cell):
 def show_button(cell1):
     if cell1 is None:
         return {'display':'none'}
-    return {'display':'block'}
+    return {'display':'inline-block'}
 

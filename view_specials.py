@@ -33,9 +33,9 @@ def DATABASE():
                     'margin-top': '0px',
                     'padding': '0',
                     'width': '100%',
-                    'height': '100%',
+                    'height': 'auto',
                     'min-height':'400px',
-                    'max-height':'72vh',
+                    'max-height':'950px',
                     'overflow-y':'auto',
                     'border': '0px solid white',
                     'borderRadius': '10px',
@@ -88,16 +88,55 @@ def DATABASE():
 
 def ADMINPAGE():
     content = html.Div([
-        html.Div('АДМИНИСТРИРОВАНИЕ', className='name'),
+        html.Div([
+            html.Div('АДМИНИСТРИРОВАНИЕ', className='line name'),
+            html.Div([
+                html.Div([], id='popupAdm', className='line')
+            ], id='popupBox', className='line'),
+
+        ], className='line-wrap', style={'margin-bottom': '0', 'position': 'relative'}),
         html.Div([
             dcc.Tabs(id='tabs', value='tab-c', children=[
-                dcc.Tab(label='Сотрудники', value='tab-c', className='custom-tab', selected_className='custom-tab--selected'),
-                dcc.Tab(label='Проекты', value='tab-p', className='custom-tab', selected_className='custom-tab--selected'),
-            ], parent_className='custom-tabs', className='custom-tabs-container',),
+                dcc.Tab(label='Сотрудники', value='tab-c', className='custom-tab',
+                        selected_className='custom-tab--selected'),
+                dcc.Tab(label='Проекты', value='tab-p', className='custom-tab',
+                        selected_className='custom-tab--selected'),
+            ], parent_className='custom-tabs', className='custom-tabs-container', ),
         ], className='cloud tablo'),
+
+
         dcc.Loading([html.Div(id='tabs-content')],color='grey', type='circle'),
-        html.Button([
-            html.Span([], className='iconEdit'), 'Редактировать'
-        ],id='EditButton', className='button edit cloud', style={'display':'none'}),
+        html.Div([
+            html.Button([
+                html.Span([], className='iconEdit'), 'Редактировать'
+            ], id='EditButton', className='button edit line cloud', style={'display': 'none'}),
+            html.Button('+Новый', className='clean add line', id='AddButton'),
+        ],className='line-wrap'),
+
+        dbc.Modal(
+            [
+                dbc.ModalHeader([], ),
+                dbc.ModalBody(
+                    [
+                        dcc.Input(id='UserName', placeholder='Имя сотрудника', className='inp'),
+                        dcc.Input(id='UserLogin', placeholder='Логин', className='inp'),
+                        dcc.Input(id='UserPass', placeholder='Пароль', className='inp'),
+                        dbc.Label("Роль", html_for="slider"),
+                        dcc.Slider(id="UserRole", min=0, max=1, step=1,
+                                   marks={0: 'Юзер', 1: 'Админ'}, ),
+                        dcc.Checklist(id='UserActual', className='check',
+                                      options=[{'label': 'Актуальный', 'value': '1'}, ])
+                    ], style=dict(paddingLeft=16)
+                ),
+                dbc.ModalFooter([
+                    dbc.Button("Удалить", id="ModalDelete", className="button cloud delete",
+                               n_clicks=0),
+                    dbc.Button("Применить", id="ModalSubmit", className="button cloud submit", n_clicks=0)]
+                ),
+            ],
+            id="DialogModal",
+            centered=True,
+            is_open=False,
+        ),
     ])
     return content

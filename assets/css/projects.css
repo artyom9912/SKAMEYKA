@@ -41,6 +41,7 @@
     transition: all 0.1s ease-in, border-left-color 0s ease-in;
 }
 
+
 .card:hover{
     border-left: #40e0b3 solid 12px;
     background-image: url("../img/prjActive.png");

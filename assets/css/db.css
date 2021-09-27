@@ -10,6 +10,14 @@
     padding: 0;
     transition: all 0.12s ease-in-out;
 }
+.db .cell-0-1{
+    background-color: rgb(49, 49, 49) !important;
+}
+#AdmTable .cell-0-1{
+    background-color: #E1E1E1 !important;
+}
+.dash-fixed-row{ margin-right: 0 !important;}
+
 .dash-spreadsheet .row {
   flex-wrap: nowrap;
 }
@@ -25,7 +33,7 @@
     color: black;
     margin-bottom: 8px;
 }
-.Select-control{
+.filters .Select-control{
     border: none !important;
     background-color: #f6f6f6 !important;
 }
@@ -36,22 +44,7 @@
 .Select-menu-outer>*{
     cursor: pointer;
 }
-.clean{
-    font-family: Rubik, monospace;
-    background-color: #ffffff;
-    box-shadow: 0px 5px 13px #d2d2d2;
-    border: none;
-    color: #6f6f6f;
-    width: 50%;
-    height: 36px;
-    border-radius: 8px;
-    margin-top: 10px;
-}
-.clean:focus{border: none !important; outline: none !important;}
-.clean:hover{background-color: #f8f8f8
-}
-.clean:active{background-color: #d4d4d4; color: #8d8d8d;
-}
+
 .rows{
     margin-top: 12px;
     height: 45px;
