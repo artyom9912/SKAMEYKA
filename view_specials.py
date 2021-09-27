@@ -92,7 +92,7 @@ def ADMINPAGE():
             html.Div('АДМИНИСТРИРОВАНИЕ', className='line name'),
             html.Div([
                 html.Div([], id='popupAdm', className='line')
-            ], id='popupBox', className='line'),
+            ], id='popupBoxAdm', className='line'),
 
         ], className='line-wrap', style={'margin-bottom': '0', 'position': 'relative'}),
         html.Div([

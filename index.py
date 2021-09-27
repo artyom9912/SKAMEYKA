@@ -12,14 +12,15 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 from callback import update_db
-from app import appDash, app, engine, calendar_cache, login_manager#, mysql
+from app import appDash, app, calendar_cache, login_manager#, engine
+from clickhouse_driver import connect
 # CLICKHOUSE_ENGINE = create_engine('clickhouse://10.200.2.113/recengine')
 
 
 @login_manager.user_loader
 def loadUser(user_id):
-    con = engine.connect()
-
+    # con = engine.connect()
+    con = connect('clickhouse://10.200.2.113')
     res = con.execute(f'SELECT id, username, relevant, admin, fullname FROM skameyka.user_table WHERE id = {user_id}')
     user=res.fetchone()
     print(user)
@@ -48,7 +49,8 @@ def logout():
 
 @app.route('/login', methods=['POST'])
 def login():
-    con = engine.connect()
+    # con = engine.connect()
+    con = connect('clickhouse://10.200.2.113')
     username = request.form.get('username')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False

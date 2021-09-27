@@ -3,7 +3,8 @@ from datetime import datetime as dt
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
-from app import appDash, calendar_cache, engine, WEEKDAYS
+from app import appDash, calendar_cache, WEEKDAYS#, engine
+from clickhouse_driver import connect
 import dash
 from time import sleep
 import dash_html_components as html
@@ -15,7 +16,7 @@ import flask_login
 from datatables import UsersTable, ProjectsTable
 
 WEEK_NUMBERS = dict(zip(WEEKDAYS, range(0, 7)))
-precalendar = pd.DataFrame()
+CACHE = {}
 
 @appDash.callback(
     Output('USER', 'children'),
@@ -147,7 +148,8 @@ calendar = None
     Input('Datepicker', 'date'),
 )
 def SetDatesCalendar(addProject, start_date):
-    con = engine.connect()
+    # con = engine.connect()
+    con = connect('clickhouse://10.200.2.113')
     try:
         start_date = dt.strptime(start_date, '%Y-%m-%d')
     except:
@@ -187,7 +189,8 @@ def SetDatesCalendar(addProject, start_date):
     prevent_initial_call=True
 )
 def SaveCalendar(n_clicks, old):
-    con = engine.connect()
+    # con = engine.connect()
+    con = connect('clickhouse://10.200.2.113')
     if len(calendar_cache) == 0:
         return old + [
             html.Div([html.Span('😬', className='symbol emoji'), 'Нет изменений'], className='cloud line popup white',hidden=False)]
@@ -353,7 +356,8 @@ def CalendarChanges(current, previous, start_date):
     Input('ModalDelete', 'n_clicks'),
 )
 def RenderModal(tab, row, clickE, clickA, clickS, clickD):
-    con = engine.connect()
+    # con = engine.connect()
+    con = connect('clickhouse://10.200.2.113')
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'EditButton' in changed_id:
         UPDATE_DICT = True
@@ -369,14 +373,17 @@ def RenderModal(tab, row, clickE, clickA, clickS, clickD):
         UPDATE_DICT = False
         Open = False
 
+    CACHE.clear()
+
     if row is not None and len(row) != 0 : id = row[0]
     else: id = None
+    CACHE['id'] = id
 
     if tab == 'tab-c':
         if UPDATE_DICT:
             df = pd.read_sql(f'SELECT * FROM skameyka.user_table WHERE id ={id}', con)
             row = df.iloc[0]
-            Span = 'ID: '+str(row[0])
+            Span = 'ID: '+str(id)
             UserName = row['fullname']
             UserLogin = row['username']
             UserPass = row['password']
@@ -410,7 +417,7 @@ def RenderModal(tab, row, clickE, clickA, clickS, clickD):
         if UPDATE_DICT:
             df = pd.read_sql(f'SELECT * FROM skameyka.project_table WHERE id ={id}', con)
             row = df.iloc[0]
-            Span = 'ID: ' + str(row[0])
+            Span = 'ID: ' + str(id)
             PrjName = row['title']
             PrjCode = row['code']
             PrjCustomer = row['customer']
@@ -441,6 +448,51 @@ def RenderModal(tab, row, clickE, clickA, clickS, clickD):
                 ),
             ], Open
 
+@appDash.callback(
+    Output('ModalDelete', 'style'),
+    [Input('PrjName', 'value')],
+    [Input('PrjCode', 'value')],
+    [Input('PrjCustomer', 'value')],
+    [Input('PrjStage', 'value')],
+    [Input('PrjActual', 'value')],
+    prevent_initial_call=True
+)
+def UserChanges(PrjName, PrjCode, PrjCustomer, PrjStage, PrjActual):
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'PrjName' in changed_id:
+        CACHE['PrjName'] = f"'{PrjName}'"
+    elif 'PrjCode' in changed_id:
+        CACHE['PrjCode'] = f"'{PrjCode}'"
+    elif 'PrjCustomer' in changed_id:
+        CACHE['PrjCustomer'] = f"'{PrjCustomer}'"
+    elif 'PrjStage' in changed_id:
+        CACHE['PrjStage'] = f"'{PrjStage}'"
+    elif 'PrjActual' in changed_id:
+        CACHE['PrjActual'] = 1 if '1' in PrjActual else 0
+    return dash.no_update
+
+@appDash.callback(
+    Output('popupAdm', 'style'),
+    [Input('UserName', 'value')],
+    [Input('UserLogin', 'value')],
+    [Input('UserPass', 'value')],
+    [Input('UserRole', 'value')],
+    [Input('UserActual', 'value')],
+    prevent_initial_call=True
+)
+def UserChanges(UserName, UserLogin, UserPass, UserRole, UserActual):
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'UserName' in changed_id:
+        CACHE['UserName'] = f"'{UserName}'"
+    elif 'UserLogin' in changed_id:
+        CACHE['UserLogin'] = f"'{UserLogin}'"
+    elif 'UserPass' in changed_id:
+        CACHE['UserPass'] = f"'{UserPass}'"
+    elif 'UserRole' in changed_id:
+        CACHE['UserRole'] = UserRole
+    elif 'UserActual' in changed_id:
+        CACHE['UserActual'] = 1 if '1' in UserActual else 0
+    return dash.no_update
 
 @appDash.callback(
     Output('popupAdm', 'children'),
@@ -452,43 +504,79 @@ def RenderModal(tab, row, clickE, clickA, clickS, clickD):
     prevent_initial_call=True
 )
 def UpdateDict(n_clicks1, n_clicks2, old, head, tab):
-    con = engine.connect()
+    # con = engine.connect()
+    con = connect('clickhouse://10.200.2.113')
     if n_clicks1 is None and n_clicks2 is None: return dash.no_update
     UPDATE = False
     DELETE = False
-    CREATE = False
+    INSERT = False
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
 
     if 'ModalSubmit' in changed_id and ('новый юзер' in head[0].lower() or 'новый проект' in head[0].lower()):
-        CREATE = True
+        INSERT = True
     elif 'ModalDelete' in changed_id:
         DELETE = True
     elif 'ModalSubmit' in changed_id:
         UPDATE = True
     else: return dash.no_update
+    id = CACHE['id']
+    CACHE.pop('id')
+    print(CACHE)
+    sql = ''
+    try:
+        if tab == 'tab-c':
+            MAP = {'UserName':'fullname', 'UserLogin':'username', 'UserPass':'password', 'UserRole':'admin', 'UserActual':'relevant'}
+            if UPDATE:
+                sql = "UPDATE skameyka.user_table SET " + ', '.join(str(MAP[key])+" = "+str(CACHE[key]) for key in CACHE.keys())+ " WHERE id = "+str(id)
+            elif INSERT:
+                if 'UserRole' not in CACHE.keys(): CACHE['UserRole'] = 0
+                if 'UserActual' not in CACHE.keys(): CACHE['UserActual'] = 1
+                sql = f"INSERT INTO skameyka.user_table (username, password, fullname, relevant, admin) VALUES " \
+                      f"({CACHE['UserLogin']},{CACHE['UserPass']},{CACHE['UserName']},{CACHE['UserActual']},{CACHE['UserRole']})"
+            elif DELETE:
+                sql = f"DELETE FROM skameyka.main_table WHERE user_id = {id}"
+                sql2 = f"DELETE FROM skameyka.user_table WHERE id = {id}"
 
-    if tab == 'tab-c':
-        pass
-    elif tab == 'tab-p':
-        pass
+        elif tab == 'tab-p':
+            MAP = {'PrjName':'title', 'PrjStage':'stage', 'PrjCode':'code', 'PrjCustomer':'customer', 'PrjActual':'relevant'}
+            if UPDATE:
+                sql = "UPDATE skameyka.project_table SET " + ', '.join(str(MAP[key])+" = "+str(CACHE[key]) for key in CACHE.keys())+ " WHERE id = "+str(id)
+            elif INSERT:
+                if 'PrjActual' not in CACHE.keys(): CACHE['PrjActual'] = 1
+                sql = f"INSERT INTO skameyka.project_table (title, stage, code, customer, relevant) VALUES " \
+                      f"({CACHE['PrjName']},{CACHE['PrjStage']},{CACHE['PrjCode']},{CACHE['PrjCustomer']},{CACHE['PrjActual']})"
+            elif DELETE:
+                sql = f"DELETE FROM skameyka.main_table WHERE project_id = {id}"
+                sql2 = f"DELETE FROM skameyka.project_table WHERE id = {id}"
 
-    return old + [
-        html.Div([html.Span('✔', className='symbol'), 'Успешно сохранено'], className='cloud line popup green', hidden=False)]
+    except Exception as e:
+        e_type, e_val, e_tb = sys.exc_info()
+        traceback.print_exception(e_type, e_val, e_tb, file=open('log.txt', 'a'))
+        CACHE.clear()
+        return old + [html.Div([html.Span('😧', className='symbol emoji'), 'Возникла ошибка!'], className='cloud line popup orange', hidden=False)]
 
-    # if len(calendar_cache) == 0:
-    #     return old + [
-    #         html.Div([html.Span('😬', className='symbol emoji'), 'Нет изменений'], className='cloud line popup white',hidden=False)]
-    # try:
-    #     for sql in calendar_cache:
-    #         print(sql)
-    #         con.execute(sql)
-    #
-    #     for i in range(0, len(calendar_cache)): del calendar_cache[0]
-    #     return old + [html.Div([html.Span('✔', className='symbol'), 'Успешно сохранено'], className='cloud line popup green', hidden=False)]
-    #
-    # except Exception as e:
-    #     e_type, e_val, e_tb = sys.exc_info()
-    #     traceback.print_exception(e_type, e_val, e_tb, file=open('log.txt', 'a'))
-    #     for i in range(0, len(calendar_cache)): del calendar_cache[0]
-    #     return old + [html.Div([html.Span('😧', className='symbol emoji'), 'Возникла ошибка!'], className='cloud line popup orange', hidden=False)]
+    print(sql)
+    CACHE.clear()
+    # con.execute()
+    if INSERT or UPDATE:
+        return old + [
+            html.Div([html.Span('✔', className='symbol'), 'Данные обновлены!'], className='cloud line popup green', hidden=False)]
+    elif DELETE:
+        return old + [
+            html.Div([html.Span('✂️', className='symbol emoji'), 'Успешно удалено!'], className='cloud line popup green',
+                     hidden=False)]
+
+
+@appDash.callback(
+    Output('popupBoxAdm', 'children'),
+    Input('popupAdm', 'children'),
+    prevent_initial_call=True
+)
+def SaveAdm(ch):
+    print(ch)
+    if len(ch) != 0:
+        sleep(2.5)
+        return html.Div([], id='popupAdm', className='line')
+    else:
+        dash.no_update()
 
