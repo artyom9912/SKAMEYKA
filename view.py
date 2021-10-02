@@ -95,36 +95,37 @@ def LAYOUT(username, role):
 
 
 def PROJECTDESK():
+    con = engine.connect()
+    projects = pd.read_sql("""
+        SELECT title, stage, count_users, sum_hours FROM skameyka.project_table p
+        LEFT JOIN (SELECT project_id, count(distinct user_id) count_users, sum(hours) sum_hours
+              FROM skameyka.main_table
+              GROUP BY project_id) as agr ON (project_id = p.id)
+        WHERE relevant = 1
+    """,con)
+    print(projects)
+    rel = pd.read_sql('SELECT count(*) rel FROM skameyka.project_table WHERE relevant=1', con).iloc[0]['rel']
+    irrel = pd.read_sql('SELECT count(*) irrel FROM skameyka.project_table WHERE relevant!=1', con).iloc[0]['irrel']
     content = html.Div(
         [
             html.Div('ДОСКА ПРОЕКТОВ', className='name'),
             html.Div([
-                html.Div([47, html.Span('завершено', className='tail')], className='cloud number line'),
-                html.Div([12, html.Span('актуальных', className='tail')], className='cloud number line'),
+                html.Div([irrel, html.Span('завершено', className='tail')], className='cloud number line'),
+                html.Div([rel, html.Span('актуальных', className='tail')], className='cloud number line'),
             ], className='line-wrap'),
             html.Div([
                 html.Div([
                     html.Div([
+
                         html.Div([
-                            html.Div(['ЖК АКВАМАРИН', dcc.Markdown('**Этап: **' + 'подготовка', className='prjStage')],
+                            html.Div([project['title'], dcc.Markdown('**Этап: **' + project['stage'], className='prjStage')],
                                      className='prjName'),
                             html.Div([
-                                html.Div([62, html.Span('часа', className='tail')], className='num line'),
-                                html.Div([9, html.Span('сотрудников', className='tail')], className='num line dim'),
+                                html.Div([project['sum_hours'], html.Span('часов', className='tail')], className='num line'),
+                                html.Div([project['count_users'], html.Span('сотрудников', className='tail')], className='num line dim'),
                             ], className='line-wrap prjInfo'),
-                        ], className='card'),
-                        html.Div([
-                            html.Div(['ЖК АКВАМАРИН',
-                                      dcc.Markdown('**Этап: **' + 'реализация', className='prjStage')],
-                                     className='prjName'),
-                            html.Div([
-                                html.Div([53, html.Span('часа', className='tail')], className='num line'),
-                                html.Div([4, html.Span('сотрудников', className='tail')],
-                                         className='num line dim'),
-                            ], className='line-wrap prjInfo'),
-                        ], className='card'),
-                        html.Div([], className='card'),
-                        html.Div([], className='card'),
+                        ], className='card') for id, project in projects.iterrows()
+
                     ], className='grid'),
                 ], className='cloud desk line'),
                 html.Div([
