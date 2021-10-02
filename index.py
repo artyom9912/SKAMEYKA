@@ -3,24 +3,22 @@ from flask import Flask, render_template, request, redirect, flash
 import flask_login
 from flask_login import login_required
 from user import User
-from sqlalchemy import create_engine
+import pandas as pd
 import dash
 from view import LAYOUT, PROJECTDESK, CALENDAR
 from view_specials import DATABASE, ADMINPAGE
 from dash.dependencies import Input, Output
-import dash_core_components as dcc
-import dash_bootstrap_components as dbc
-import dash_html_components as html
+
 from callback import update_db
-from app import appDash, app, calendar_cache, login_manager#, engine
-from clickhouse_driver import connect
+from app import appDash, app, calendar_cache, login_manager, engine, dbDF
+# from clickhouse_driver import connect
 # CLICKHOUSE_ENGINE = create_engine('clickhouse://10.200.2.113/recengine')
 
 
 @login_manager.user_loader
 def loadUser(user_id):
-    # con = engine.connect()
-    con = connect('clickhouse://10.200.2.113')
+    con = engine.connect()
+    # con = connect('clickhouse://10.200.2.113')
     res = con.execute(f'SELECT id, username, relevant, admin, fullname FROM skameyka.user_table WHERE id = {user_id}')
     user=res.fetchone()
     print(user)
@@ -49,8 +47,8 @@ def logout():
 
 @app.route('/login', methods=['POST'])
 def login():
-    # con = engine.connect()
-    con = connect('clickhouse://10.200.2.113')
+    con = engine.connect()
+    # con = connect('clickhouse://10.200.2.113')
     username = request.form.get('username')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
@@ -100,7 +98,8 @@ def projectDesk():
               Input('admBtn', 'n_clicks'))
 def display_page(prjBtn, calBtn, dbBtn, admBtn):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-
+    con = engine.connect()
+    global dbDF
     for i in range(0,len(calendar_cache)): del calendar_cache[0]
 
     if 'prjBtn' in changed_id:
@@ -108,7 +107,17 @@ def display_page(prjBtn, calBtn, dbBtn, admBtn):
     elif 'calBtn' in changed_id:
         content = CALENDAR()
     elif 'dbBtn' in changed_id:
-        content = DATABASE()
+        dbDF[0]=(pd.read_sql("""
+        SELECT YEAR(timestamp), MONTH(timestamp), DAY(timestamp), fullname, title, code, customer, hours
+        FROM skameyka.main_table
+        JOIN skameyka.project_table ON project_table.id = project_id
+        JOIN skameyka.user_table ON user_table.id = user_id
+        ORDER BY timestamp desc
+    """, con))
+        head = ['ГОД', 'ММ', 'ДД', 'СОТРУДНИК', 'ПРОЕКТ', 'ШИФР', 'ЗАКАЗЧИК', 'ЧАСЫ']
+        dbDF[0].columns = head
+        print(dbDF[0].shape)
+        content = DATABASE(dbDF[0])
     elif 'admBtn' in changed_id:
         content = ADMINPAGE()
     else:

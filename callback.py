@@ -3,8 +3,8 @@ from datetime import datetime as dt
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
-from app import appDash, calendar_cache, WEEKDAYS#, engine
-from clickhouse_driver import connect
+from app import appDash, calendar_cache, WEEKDAYS, engine, dbDF
+# from clickhouse_driver import connect
 import dash
 from time import sleep
 import dash_html_components as html
@@ -45,9 +45,14 @@ def SetUser(style):
     prevent_initial_call=True
 )
 def update_db(user, project, customer, day, month, year):
-    from app import dbDF
+    con = engine.connect()
+    # head = ['ГОД','ММ','ДД','СОТРУДНИК','ПРОЕКТ','ШИФР','ЗАКАЗЧИК','ЧАСЫ']
+    # df.columns = head
+    df=dbDF[0]
+
     groupby = []
-    df = dbDF
+
+
     monthD = True
     dayD = True
 
@@ -148,8 +153,8 @@ calendar = None
     Input('Datepicker', 'date'),
 )
 def SetDatesCalendar(addProject, start_date):
-    # con = engine.connect()
-    con = connect('clickhouse://10.200.2.113')
+    con = engine.connect()
+    # con = connect('clickhouse://10.200.2.113')
     try:
         start_date = dt.strptime(start_date, '%Y-%m-%d')
     except:
@@ -189,8 +194,8 @@ def SetDatesCalendar(addProject, start_date):
     prevent_initial_call=True
 )
 def SaveCalendar(n_clicks, old):
-    # con = engine.connect()
-    con = connect('clickhouse://10.200.2.113')
+    con = engine.connect()
+    # con = connect('clickhouse://10.200.2.113')
     if len(calendar_cache) == 0:
         return old + [
             html.Div([html.Span('😬', className='symbol emoji'), 'Нет изменений'], className='cloud line popup white',hidden=False)]
@@ -356,8 +361,8 @@ def CalendarChanges(current, previous, start_date):
     Input('ModalDelete', 'n_clicks'),
 )
 def RenderModal(tab, row, clickE, clickA, clickS, clickD):
-    # con = engine.connect()
-    con = connect('clickhouse://10.200.2.113')
+    con = engine.connect()
+    # con = connect('clickhouse://10.200.2.113')
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'EditButton' in changed_id:
         UPDATE_DICT = True
@@ -427,7 +432,7 @@ def RenderModal(tab, row, clickE, clickA, clickS, clickD):
         else:
             Title = 'Новый Проект'
             Span = ''
-            PrjName, PrjCode, PrjCustomer, PrjStage, PrjActual = None,None,None,'Концепция',None,
+            PrjName, PrjCode, PrjCustomer, PrjStage, PrjActual = None,None,None,'Концепция',1,
         return \
             [
                 dbc.ModalHeader([Title, html.Span(Span, style=dict(color='lightgray',fontFamily='"Noah Regular", monospace',marginLeft=6,fontSize=18))],id='ModalHead'),
@@ -458,6 +463,7 @@ def RenderModal(tab, row, clickE, clickA, clickS, clickD):
     prevent_initial_call=True
 )
 def UserChanges(PrjName, PrjCode, PrjCustomer, PrjStage, PrjActual):
+    stage= {0: 'Концепция', 1: 'ЭП', 2:'ПД', 3:'РД'}
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'PrjName' in changed_id:
         CACHE['PrjName'] = f"'{PrjName}'"
@@ -466,7 +472,7 @@ def UserChanges(PrjName, PrjCode, PrjCustomer, PrjStage, PrjActual):
     elif 'PrjCustomer' in changed_id:
         CACHE['PrjCustomer'] = f"'{PrjCustomer}'"
     elif 'PrjStage' in changed_id:
-        CACHE['PrjStage'] = f"'{PrjStage}'"
+        CACHE['PrjStage'] = f"'{stage[PrjStage]}'"
     elif 'PrjActual' in changed_id:
         CACHE['PrjActual'] = 1 if '1' in PrjActual else 0
     return dash.no_update
@@ -504,8 +510,8 @@ def UserChanges(UserName, UserLogin, UserPass, UserRole, UserActual):
     prevent_initial_call=True
 )
 def UpdateDict(n_clicks1, n_clicks2, old, head, tab):
-    # con = engine.connect()
-    con = connect('clickhouse://10.200.2.113')
+    con = engine.connect()
+    # con = connect('clickhouse://10.200.2.113')
     if n_clicks1 is None and n_clicks2 is None: return dash.no_update
     UPDATE = False
     DELETE = False
@@ -523,6 +529,7 @@ def UpdateDict(n_clicks1, n_clicks2, old, head, tab):
     CACHE.pop('id')
     print(CACHE)
     sql = ''
+    sql2 = ''
     try:
         if tab == 'tab-c':
             MAP = {'UserName':'fullname', 'UserLogin':'username', 'UserPass':'password', 'UserRole':'admin', 'UserActual':'relevant'}
@@ -543,6 +550,7 @@ def UpdateDict(n_clicks1, n_clicks2, old, head, tab):
                 sql = "UPDATE skameyka.project_table SET " + ', '.join(str(MAP[key])+" = "+str(CACHE[key]) for key in CACHE.keys())+ " WHERE id = "+str(id)
             elif INSERT:
                 if 'PrjActual' not in CACHE.keys(): CACHE['PrjActual'] = 1
+                if 'PrjStage' not in CACHE.keys(): CACHE['PrjStage'] = "'Концепция'"
                 sql = f"INSERT INTO skameyka.project_table (title, stage, code, customer, relevant) VALUES " \
                       f"({CACHE['PrjName']},{CACHE['PrjStage']},{CACHE['PrjCode']},{CACHE['PrjCustomer']},{CACHE['PrjActual']})"
             elif DELETE:
@@ -557,7 +565,9 @@ def UpdateDict(n_clicks1, n_clicks2, old, head, tab):
 
     print(sql)
     CACHE.clear()
-    # con.execute()
+    if sql != '': con.execute(sql)
+    if sql2 != '': con.execute(sql2)
+
     if INSERT or UPDATE:
         return old + [
             html.Div([html.Span('✔', className='symbol'), 'Данные обновлены!'], className='cloud line popup green', hidden=False)]

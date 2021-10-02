@@ -7,7 +7,7 @@ from datetime import date
 import plotly.graph_objects as go
 import pandas as pd
 from view_specials import DATABASE
-from app import WEEKDAYS, con
+from app import WEEKDAYS, engine
 
 filterItems = [
     dbc.DropdownMenuItem("Актуальные"),
@@ -137,6 +137,7 @@ def PROJECTDESK():
 
 
 def CALENDAR():
+    con = engine.connect()
     TODAY = datetime.date.today()
     PROJECTS_ACTUAL = pd.read_sql('SELECT title FROM skameyka.project_table WHERE relevant = 1', con)['title'].tolist()
     content = html.Div(

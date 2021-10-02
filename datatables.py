@@ -2,7 +2,7 @@ import pandas as pd
 import dash_html_components as html
 import dash_table
 from dash.dependencies import Input, Output, State
-from app import appDash, con
+from app import appDash, engine
 import dash
 from sqlalchemy import create_engine
 # engine = create_engine('clickhouse://10.200.2.113/recengine')
@@ -94,6 +94,7 @@ def ProjectsTable():
     Input("tabs", "value"),
 )
 def AdmTableContent(tab):
+    con = engine.connect()
     if tab == 'tab-c':
         df = pd.read_sql("SELECT id, fullname, admin, relevant  FROM skameyka.user_table", con)
         df.columns = ['id','ИМЯ', 'АДМИН', 'СТАТУС']

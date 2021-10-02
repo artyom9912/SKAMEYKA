@@ -5,16 +5,18 @@ import dash_table
 import dash
 import plotly.graph_objects as go
 import pandas as pd
-from app import dbDF
+import app
 
 filterItems = [
     dbc.DropdownMenuItem("Актуальные"),
     dbc.DropdownMenuItem("Архивные"),
     dbc.DropdownMenuItem("Все"),
 ]
-def DATABASE():
-    global dbDF
+def DATABASE(dbDF):
+
+    print(dbDF.info())
     dbDF['ШИФР'] = dbDF['ШИФР'].map(lambda x: str(x).split(' ')[0])
+
     content = html.Div([
         html.Div('БАЗА ДАННЫХ', className='name'),
         html.Div([
