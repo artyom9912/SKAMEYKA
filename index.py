@@ -107,6 +107,7 @@ def display_page(prjBtn, calBtn, dbBtn, admBtn):
     elif 'calBtn' in changed_id:
         content = CALENDAR()
     elif 'dbBtn' in changed_id:
+        # JOIN для отображения бд
         dbDF[0]=(pd.read_sql("""
         SELECT YEAR(timestamp), MONTH(timestamp), DAY(timestamp), fullname, title, code, customer, hours
         FROM skameyka.main_table

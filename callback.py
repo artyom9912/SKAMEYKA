@@ -162,10 +162,10 @@ def SetDatesCalendar(addProject, start_date):
     weekday = int(start_date.weekday())
     start = start_date + datetime.timedelta(days=-1 * weekday)
     end = start_date + datetime.timedelta(days=6 - weekday)
-
+    # В ЦИКЛЕ СОБИРАЕМ ВСЕ ДНИ НЕДЕЛИ
     for i in range(0, 7):
         day = (start + datetime.timedelta(days=i)).strftime('%Y-%m-%d')
-
+        # СБОР ДАННЫХ КАЛЕНДАРЯ (ПРИСОЕДИНЕНИЕ ЧЕРЕЗ WHERE)
         df = pd.read_sql \
             (f"""
             SELECT title, timestamp, hours FROM skameyka.main_table m, skameyka.project_table p
@@ -303,7 +303,7 @@ def CalendarChanges(current, previous, start_date):
     start_date = dt.strptime(start_date, '%Y-%m-%dT%H:%M:%S')
     date = start_date + datetime.timedelta(days=WEEK_NUMBERS[UPDATE[1]])
     date = date.strftime('%Y-%m-%d')
-
+    # КУЧА ПОДЗАПРОСОВ CRUD
     if UPDATE[3] == 'UPD':
         query = f"""
                 UPDATE skameyka.main_table SET hours = {UPDATE[2]} WHERE user_id = 
