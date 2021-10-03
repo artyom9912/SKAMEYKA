@@ -27,6 +27,37 @@ def SetUser(style):
     print()
     return flask_login.current_user.name, 'Администратор' if flask_login.current_user.admin == 1 else 'Сотрудник'
 
+@appDash.callback(
+    Output('ProjectDesk', 'children'),
+    Input('RelevantFilterDesk', 'value'),
+    Input('YearFilterDesk', 'value'),
+)
+def UpdateProjectDesk(relevant, year):
+    if relevant == 'Архивные': relevant = 'WHERE relevant = 0'
+    elif relevant == 'Актуальные': relevant = 'WHERE relevant = 1'
+    else: relevant = 'WHERE relevant in (0,1)'
+
+    if year == 'Всё время' : year = ''
+    else: year = f'AND p.id in (SELECT distinct project_id FROM skameyka.main_table GROUP BY project_id HAVING YEAR(MAX(timestamp)) = \'{year}\')'
+    con = engine.connect()
+    projects = pd.read_sql(f"""
+            SELECT title, stage, count_users, sum_hours, relevant FROM skameyka.project_table p
+            LEFT JOIN (SELECT project_id, count(distinct user_id) count_users, sum(hours) sum_hours, max(timestamp) lastAct
+                  FROM skameyka.main_table
+                  GROUP BY project_id) as agr ON (project_id = p.id)
+            {relevant}
+            {year}
+            ORDER BY lastAct DESC
+    """, con)
+    content = [html.Div([
+                html.Div([project['title'], dcc.Markdown('**Этап: **' + project['stage'], className='prjStage')],
+                         className='prjName'),
+                html.Div([
+                    html.Div([project['sum_hours'], html.Span('часов', className='tail')], className='num line'),
+                    html.Div([project['count_users'], html.Span('сотрудников', className='tail')], className='num line dim'),
+                ], className='line-wrap prjInfo'),
+              ], className='card', style={'border-color':'grey'} if project['relevant']==0 else {}) for id, project in projects.iterrows()]
+    return content
 
 @appDash.callback(
     Output('TableDB', 'data'),
@@ -527,7 +558,7 @@ def UpdateDict(n_clicks1, n_clicks2, old, head, tab):
     else: return dash.no_update
     id = CACHE['id']
     CACHE.pop('id')
-    print(CACHE)
+    # print(CACHE)
     sql = ''
     sql2 = ''
     try:
@@ -563,7 +594,7 @@ def UpdateDict(n_clicks1, n_clicks2, old, head, tab):
         CACHE.clear()
         return old + [html.Div([html.Span('😧', className='symbol emoji'), 'Возникла ошибка!'], className='cloud line popup orange', hidden=False)]
 
-    print(sql)
+    # print(sql)
     CACHE.clear()
     if sql != '': con.execute(sql)
     if sql2 != '': con.execute(sql2)
@@ -583,7 +614,7 @@ def UpdateDict(n_clicks1, n_clicks2, old, head, tab):
     prevent_initial_call=True
 )
 def SaveAdm(ch):
-    print(ch)
+    # print(ch)
     if len(ch) != 0:
         sleep(2.5)
         return html.Div([], id='popupAdm', className='line')

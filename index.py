@@ -21,7 +21,7 @@ def loadUser(user_id):
     # con = connect('clickhouse://10.200.2.113')
     res = con.execute(f'SELECT id, username, relevant, admin, fullname FROM skameyka.user_table WHERE id = {user_id}')
     user=res.fetchone()
-    print(user)
+    # print(user)
     if user is None: return
     USER = User()
     USER.id = user[0]
@@ -117,12 +117,12 @@ def display_page(prjBtn, calBtn, dbBtn, admBtn):
     """, con))
         head = ['ГОД', 'ММ', 'ДД', 'СОТРУДНИК', 'ПРОЕКТ', 'ШИФР', 'ЗАКАЗЧИК', 'ЧАСЫ']
         dbDF[0].columns = head
-        print(dbDF[0].shape)
+        # print(dbDF[0].shape)
         content = DATABASE(dbDF[0])
     elif 'admBtn' in changed_id:
         content = ADMINPAGE()
     else:
-        content = ADMINPAGE()
+        content = PROJECTDESK()
     return content
 
 if __name__ == '__main__':

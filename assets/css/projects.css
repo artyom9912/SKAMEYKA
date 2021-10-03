@@ -43,7 +43,7 @@
 
 
 .card:hover{
-    border-left: #40e0b3 solid 12px;
+    border-left: #40e0b3 solid 12px !important;
     background-image: url("../img/prjActive.png");
 }
 .card:hover .prjName{

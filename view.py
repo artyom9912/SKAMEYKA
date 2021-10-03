@@ -10,15 +10,9 @@ from view_specials import DATABASE
 from app import WEEKDAYS, engine
 
 filterItems = [
-    dbc.DropdownMenuItem("Актуальные"),
-    dbc.DropdownMenuItem("Архивные"),
-    dbc.DropdownMenuItem("Все"),
-]
-Years = [
-    dbc.DropdownMenuItem("2021"),
-    dbc.DropdownMenuItem("2020"),
-    dbc.DropdownMenuItem("2019"),
-    dbc.DropdownMenuItem("Всё время"),
+    "Актуальные",
+    "Архивные",
+    "Все"
 ]
 
 
@@ -96,14 +90,12 @@ def LAYOUT(username, role):
 
 def PROJECTDESK():
     con = engine.connect()
-    projects = pd.read_sql("""
-        SELECT title, stage, count_users, sum_hours FROM skameyka.project_table p
-        LEFT JOIN (SELECT project_id, count(distinct user_id) count_users, sum(hours) sum_hours
-              FROM skameyka.main_table
-              GROUP BY project_id) as agr ON (project_id = p.id)
-        WHERE relevant = 1
-    """,con)
-    print(projects)
+    Years = [
+        str(row['year']) for id, row in
+        pd.read_sql("SELECT distinct YEAR(timestamp) year FROM skameyka.main_table ORDER BY year DESC", con).iterrows()
+    ]
+    Years.append("Всё время")
+
     rel = pd.read_sql('SELECT count(*) rel FROM skameyka.project_table WHERE relevant=1', con).iloc[0]['rel']
     irrel = pd.read_sql('SELECT count(*) irrel FROM skameyka.project_table WHERE relevant!=1', con).iloc[0]['irrel']
     content = html.Div(
@@ -115,23 +107,14 @@ def PROJECTDESK():
             ], className='line-wrap'),
             html.Div([
                 html.Div([
-                    html.Div([
-
-                        html.Div([
-                            html.Div([project['title'], dcc.Markdown('**Этап: **' + project['stage'], className='prjStage')],
-                                     className='prjName'),
-                            html.Div([
-                                html.Div([project['sum_hours'], html.Span('часов', className='tail')], className='num line'),
-                                html.Div([project['count_users'], html.Span('сотрудников', className='tail')], className='num line dim'),
-                            ], className='line-wrap prjInfo'),
-                        ], className='card') for id, project in projects.iterrows()
-
-                    ], className='grid'),
+                    html.Div([], className='grid', id='ProjectDesk'),
                 ], className='cloud desk line'),
                 html.Div([
                     html.Div('Фильтры', className='silence', ),
-                    dbc.DropdownMenu(label="Актуальные", bs_size="md", color='white', children=filterItems),
-                    dbc.DropdownMenu(label="2021", bs_size="md", color='white', children=Years),
+                    dcc.Dropdown(id='RelevantFilterDesk', placeholder='', style=dict(width=150, marginTop=15),
+                                 options=[{'label': i, 'value': i} for i in filterItems], value='Актуальные'),
+                    dcc.Dropdown(id='YearFilterDesk', placeholder='',  style=dict(width=150, marginTop=15),
+                                 options=[{'label': i, 'value': i} for i in Years], value='Всё время'),
                 ], className='cloud filter line'),
             ], className='line-wrap focus'), ])
     return content
