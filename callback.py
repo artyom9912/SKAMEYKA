@@ -77,8 +77,7 @@ def UpdateProjectDesk(relevant, year):
 )
 def update_db(user, project, customer, day, month, year):
     con = engine.connect()
-    # head = ['ГОД','ММ','ДД','СОТРУДНИК','ПРОЕКТ','ШИФР','ЗАКАЗЧИК','ЧАСЫ']
-    # df.columns = head
+
     df=dbDF[0]
 
     groupby = []
@@ -120,10 +119,10 @@ def update_db(user, project, customer, day, month, year):
             df = df[(df['ПРОЕКТ'] == project)]
 
     if customer is not None:
-        if 'ПРОЕКТ' not in groupby:
-            groupby.append('ПРОЕКТ')
-        if 'ШИФР' not in groupby:
-            groupby.append('ШИФР')
+        # if 'ПРОЕКТ' not in groupby:
+        #     groupby.append('ПРОЕКТ')
+        # if 'ШИФР' not in groupby:
+        #     groupby.append('ШИФР')
         if 'ЗАКАЗЧИК' not in groupby:
             groupby.append('ЗАКАЗЧИК')
         if customer != 'Все':

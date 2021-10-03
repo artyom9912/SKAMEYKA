@@ -135,7 +135,7 @@ def CALENDAR():
             ], className='line-wrap', style={'margin-bottom': '0', 'position': 'relative'}),
 
             html.Div([
-                html.Div(['Август', html.Span('2021 год', className='tail')], className='cloud number line'),
+                html.Div(['Октябрь', html.Span('2021 год', className='tail')], className='cloud number line'),
                 dcc.DatePickerSingle(
                     date=TODAY,
                     id='Datepicker',
