@@ -1,11 +1,8 @@
-import dash_core_components as dcc
+from dash import dcc
 import dash_bootstrap_components as dbc
-import dash_html_components as html
-import dash_table
-import dash
-import plotly.graph_objects as go
-import pandas as pd
-import app
+from dash import html
+from dash import dash_table
+
 
 filterItems = [
     dbc.DropdownMenuItem("Актуальные"),
@@ -25,7 +22,7 @@ def DATABASE(dbDF):
                 id='TableDB',
                 data=dbDF.to_dict('records'),
                 columns=[{"name": i, "id": i} for i in dbDF.columns],
-                fixed_rows={'headers': True, 'data': 0},
+                fixed_rows={'headers': True,},
                 style_data={
                     'whiteSpace':'normal'
                 },
@@ -35,9 +32,9 @@ def DATABASE(dbDF):
                     'margin-top': '0px',
                     'padding': '0',
                     'width': '100%',
-                    'height': 'auto',
+                    'height': '700px',
                     'min-height':'400px',
-                    'max-height':'950px',
+                    'max-height':'650px',
                     'overflow-y':'auto',
                     'border': '0px solid white',
                     'borderRadius': '10px',

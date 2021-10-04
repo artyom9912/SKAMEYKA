@@ -1,6 +1,6 @@
 import pandas as pd
-import dash_html_components as html
-import dash_table
+from dash import html
+from dash import dash_table
 from dash.dependencies import Input, Output, State
 from app import appDash, engine
 import dash

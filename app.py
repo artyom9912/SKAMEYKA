@@ -3,6 +3,7 @@ import flask_login
 import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
+from flask_caching import Cache
 # from clickhouse_driver import connect
 from sqlalchemy import create_engine
 # from flaskext.mysql import MySQL
@@ -11,6 +12,7 @@ engine = create_engine('mysql+pymysql://root:root@127.0.0.1/skameyka')
 # con = engine.connect()
 app = Flask(__name__)
 app.secret_key = b'_5f#cky2L"F4Q8z]/'
+
 # app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 # app.config['MYSQL_DATABASE_USER'] = 'root'
 # app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
@@ -29,7 +31,10 @@ appDash = dash.Dash(__name__,
                      url_base_pathname='/dash/',
                     external_stylesheets=[dbc.themes.BOOTSTRAP],
                     suppress_callback_exceptions=True)
-
+cache = Cache(appDash.server, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': 'cache'
+})
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 

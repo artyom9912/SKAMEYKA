@@ -1,13 +1,13 @@
 import datetime
 from datetime import datetime as dt
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
+from dash import dcc
 from dash.dependencies import Input, Output, State
-from app import appDash, calendar_cache, WEEKDAYS, engine, dbDF
+from app import appDash, calendar_cache, WEEKDAYS, engine, dbDF, cache
 # from clickhouse_driver import connect
 import dash
 from time import sleep
-import dash_html_components as html
+from dash import html
 import traceback
 import sys
 import pandas as pd
@@ -38,7 +38,7 @@ def UpdateProjectDesk(relevant, year):
     else: relevant = 'WHERE relevant in (0,1)'
 
     if year == 'Всё время' : year = ''
-    else: year = f'AND p.id in (SELECT distinct project_id FROM skameyka.main_table GROUP BY project_id HAVING YEAR(MAX(timestamp)) = \'{year}\')'
+    else: year = f'AND p.id in (SELECT distinct project_id FROM skameyka.main_table WHERE YEAR(timestamp) = \'{year}\')'
     con = engine.connect()
     projects = pd.read_sql(f"""
             SELECT title, stage, count_users, sum_hours, relevant FROM skameyka.project_table p
@@ -59,6 +59,7 @@ def UpdateProjectDesk(relevant, year):
               ], className='card', style={'border-color':'grey'} if project['relevant']==0 else {}) for id, project in projects.iterrows()]
     return content
 
+@cache.memoize(timeout=60)
 @appDash.callback(
     Output('TableDB', 'data'),
     Output('TableDB', 'columns'),
@@ -77,12 +78,8 @@ def UpdateProjectDesk(relevant, year):
 )
 def update_db(user, project, customer, day, month, year):
     con = engine.connect()
-
     df=dbDF[0]
-
     groupby = []
-
-
     monthD = True
     dayD = True
 
@@ -227,11 +224,11 @@ def SaveCalendar(n_clicks, old):
     con = engine.connect()
     # con = connect('clickhouse://10.200.2.113')
     if len(calendar_cache) == 0:
+        for i in range(0, len(calendar_cache)): del calendar_cache[0]
         return old + [
             html.Div([html.Span('😬', className='symbol emoji'), 'Нет изменений'], className='cloud line popup white',hidden=False)]
     try:
         for sql in calendar_cache:
-
             con.execute(sql)
 
         for i in range(0, len(calendar_cache)): del calendar_cache[0]
@@ -362,23 +359,6 @@ def CalendarChanges(current, previous, start_date):
     calendar_cache.append(query)
 
     return dash.no_update
-
-
-
-# @appDash.callback(
-#     Output('DialogModal', 'is_open'),
-#     Input('EditButton', 'n_clicks'),
-#     Input('AddButton', 'n_clicks'),
-#     prevent_initial_call=True
-# )
-# def OpenUserEdit(click1, click2):
-#     # global UPDATE_DICT
-#     # changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-#     # if 'AddButton' in changed_id:
-#     #     UPDATE_DICT = False
-#     # elif 'EditButton' in changed_id:
-#     #     UPDATE_DICT = True
-#     return True
 
 @appDash.callback(
     Output('DialogModal', 'children'),

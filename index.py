@@ -10,7 +10,7 @@ from view_specials import DATABASE, ADMINPAGE
 from dash.dependencies import Input, Output
 
 from callback import update_db
-from app import appDash, app, calendar_cache, login_manager, engine, dbDF
+from app import appDash, app, calendar_cache, login_manager, engine, dbDF, cache
 # from clickhouse_driver import connect
 # CLICKHOUSE_ENGINE = create_engine('clickhouse://10.200.2.113/recengine')
 
@@ -82,14 +82,21 @@ appDash.title = 'SKMK'
 @app.route('/dash')
 @flask_login.login_required
 def projectDesk():
-    # username = flask_login.current_user.name
-    # role = 'Администратор' if flask_login.current_user.admin == 1 else 'Сотрудник'
-    # appDash.layout = PROJECTDESK(username,role)
     return appDash.index()
-# @app.route('/calendar')
-# # @flask_login.login_required
-# def calendar():
-#     return appDash.index()
+
+@cache.memoize(timeout=10)
+def getData():
+    con = engine.connect()
+    dbDF[0] = (pd.read_sql("""
+            SELECT YEAR(timestamp), MONTH(timestamp), DAY(timestamp), fullname, title, code, customer, hours
+            FROM skameyka.main_table
+            JOIN skameyka.project_table ON project_table.id = project_id
+            JOIN skameyka.user_table ON user_table.id = user_id
+            ORDER BY timestamp desc
+        """, con))
+    head = ['ГОД', 'ММ', 'ДД', 'СОТРУДНИК', 'ПРОЕКТ', 'ШИФР', 'ЗАКАЗЧИК', 'ЧАСЫ']
+    dbDF[0].columns = head
+
 
 @appDash.callback(Output('content', 'children'),
               Input('prjBtn', 'n_clicks'),
@@ -98,7 +105,6 @@ def projectDesk():
               Input('admBtn', 'n_clicks'))
 def display_page(prjBtn, calBtn, dbBtn, admBtn):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-    con = engine.connect()
     global dbDF
     for i in range(0,len(calendar_cache)): del calendar_cache[0]
 
@@ -108,15 +114,7 @@ def display_page(prjBtn, calBtn, dbBtn, admBtn):
         content = CALENDAR()
     elif 'dbBtn' in changed_id:
         # JOIN для отображения бд
-        dbDF[0]=(pd.read_sql("""
-        SELECT YEAR(timestamp), MONTH(timestamp), DAY(timestamp), fullname, title, code, customer, hours
-        FROM skameyka.main_table
-        JOIN skameyka.project_table ON project_table.id = project_id
-        JOIN skameyka.user_table ON user_table.id = user_id
-        ORDER BY timestamp desc
-    """, con))
-        head = ['ГОД', 'ММ', 'ДД', 'СОТРУДНИК', 'ПРОЕКТ', 'ШИФР', 'ЗАКАЗЧИК', 'ЧАСЫ']
-        dbDF[0].columns = head
+        getData()
         # print(dbDF[0].shape)
         content = DATABASE(dbDF[0])
     elif 'admBtn' in changed_id:
@@ -126,4 +124,4 @@ def display_page(prjBtn, calBtn, dbBtn, admBtn):
     return content
 
 if __name__ == '__main__':
-    app.run(host='localhost',port=80, debug=True)
+    app.run(host='0.0.0.0',port=8080, debug=True)
