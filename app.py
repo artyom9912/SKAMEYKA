@@ -7,9 +7,10 @@ import pandas as pd
 from flask_caching import Cache
 from sqlalchemy import create_engine
 
-with open('data.json') as f:
-    config = json.load(f)
-    engine = create_engine(f'mysql+pymysql://{config["username"]}:{config["psswd"]}@{config["ip"]}/{config["db"]}')
+f = open('data.json')
+config = json.load(f)
+engine = create_engine(f'mysql+pymysql://{config["username"]}:{config["psswd"]}@{config["ip"]}/{config["db"]}')
+
 # con = engine.connect()
 app = Flask(__name__)
 app.secret_key = b'_5f#cky2L"F4Q8z]/'
