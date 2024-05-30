@@ -8,6 +8,7 @@ import dash
 from view import LAYOUT, PROJECTDESK, CALENDAR
 from view_specials import DATABASE, ADMINPAGE
 from dash.dependencies import Input, Output
+from sqlalchemy import text
 
 from callback import update_db
 from app import appDash, app, calendar_cache, login_manager, engine, dbDF, cache
@@ -19,7 +20,8 @@ from app import appDash, app, calendar_cache, login_manager, engine, dbDF, cache
 def loadUser(user_id):
     con = engine.connect()
     # con = connect('clickhouse://10.200.2.113')
-    res = con.execute(f'SELECT id, username, relevant, admin, fullname FROM skameyka.user_table WHERE id = {user_id}')
+    # con.execute(f'SELECT * FROM skameyka.user_table ')
+    res = con.execute(text(f'SELECT id, username, relevant, admin, fullname FROM skameyka.user_table WHERE id = {user_id}'))
     user=res.fetchone()
     # print(user)
     if user is None: return
@@ -57,8 +59,9 @@ def login():
         return redirect('/loginpage')
     # con = mysql.get_db()
     # cursor = con.cursor()
-    res = con.execute(f'SELECT id, password FROM skameyka.user_table '
-                   f'WHERE relevant = 1 AND username like \'{username}\';')
+
+    # con.execute(text(f'SELECT * FROM skameyka.user_table '))
+    res = con.execute(text(f'SELECT id, password FROM skameyka.user_table WHERE relevant = 1 AND username like \'{username}\';'))
     row = res.fetchone()
     if row is None:
         flash('Такого пользователя нет!')
@@ -124,4 +127,4 @@ def display_page(prjBtn, calBtn, dbBtn, admBtn):
     return content
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8080, debug=True)
+    app.run(host='127.0.0.1',port=8080, debug=True)

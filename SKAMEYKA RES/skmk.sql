@@ -1,86 +1,105 @@
 -- --------------------------------------------------------
--- Хост:                         127.0.0.1
--- Версия сервера:               8.0.16 - MySQL Community Server - GPL
--- Операционная система:         Win64
--- HeidiSQL Версия:              11.2.0.6213
+-- Host:                         127.0.0.1
+-- Versión del servidor:         8.3.0 - MySQL Community Server - GPL
+-- SO del servidor:              Win64
+-- HeidiSQL Versión:             12.6.0.6765
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
--- Дамп структуры базы данных skameyka
+-- Volcando estructura de base de datos para skameyka
 CREATE DATABASE IF NOT EXISTS `skameyka` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `skameyka`;
 
--- Дамп структуры для таблица skameyka.main_table
+-- Volcando estructura para tabla skameyka.main_table
 CREATE TABLE IF NOT EXISTS `main_table` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `TimeStamp` datetime NOT NULL,
-  `UserId` int(11) NOT NULL,
-  `ProjectId` int(11) NOT NULL,
-  `HoursSpent` float NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `timestamp` datetime NOT NULL,
+  `user_id` int NOT NULL,
+  `project_id` int NOT NULL,
+  `hours` float NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
-  KEY `UserId_idx` (`UserId`),
-  KEY `ProjectId_idx` (`ProjectId`),
-  CONSTRAINT `ProjectId` FOREIGN KEY (`ProjectId`) REFERENCES `project_table` (`id`),
-  CONSTRAINT `UserId` FOREIGN KEY (`UserId`) REFERENCES `user_table` (`id`)
+  KEY `UserId_idx` (`user_id`),
+  KEY `ProjectId_idx` (`project_id`),
+  CONSTRAINT `project_id` FOREIGN KEY (`project_id`) REFERENCES `project_table` (`id`),
+  CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `user_table` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Таблица ежедневной отчетности';
 
--- Дамп данных таблицы skameyka.main_table: ~7 rows (приблизительно)
-/*!40000 ALTER TABLE `main_table` DISABLE KEYS */;
-INSERT INTO `main_table` (`id`, `TimeStamp`, `UserId`, `ProjectId`, `HoursSpent`) VALUES
-	(1, '2020-03-06 16:20:00', 1, 2, 12),
-	(2, '2020-03-06 16:20:00', 1, 1, 10),
-	(3, '2019-04-22 00:00:00', 1, 1, 10),
-	(4, '2019-04-23 00:00:00', 1, 1, 8),
-	(5, '2019-04-24 00:00:00', 1, 1, 4),
-	(6, '2019-04-25 00:00:00', 1, 1, 5),
-	(7, '2019-04-26 00:00:00', 1, 1, 8);
-/*!40000 ALTER TABLE `main_table` ENABLE KEYS */;
+-- Volcando datos para la tabla skameyka.main_table: ~27 rows (aproximadamente)
+INSERT INTO `main_table` (`id`, `timestamp`, `user_id`, `project_id`, `hours`) VALUES
+	(1, '2023-05-30 15:23:10', 1, 1, 4),
+	(2, '2023-05-30 15:23:10', 1, 2, 4),
+	(3, '2023-05-20 15:23:10', 1, 2, 2),
+	(4, '2023-08-02 00:00:00', 3, 1, 6),
+	(5, '2023-08-03 00:00:00', 3, 1, 5),
+	(6, '2023-08-03 00:00:00', 2, 1, 6),
+	(7, '2023-08-04 00:00:00', 2, 1, 2),
+	(8, '2023-09-05 00:00:00', 3, 1, 4),
+	(9, '2023-09-05 00:00:00', 3, 1, 6),
+	(10, '2023-08-02 00:00:00', 1, 2, 5),
+	(11, '2023-08-03 00:00:00', 3, 2, 2),
+	(12, '2023-08-03 00:00:00', 2, 2, 1),
+	(13, '2023-08-04 00:00:00', 2, 2, 2),
+	(14, '2023-09-05 00:00:00', 3, 2, 1),
+	(15, '2023-09-05 00:00:00', 3, 2, 2),
+	(16, '2023-08-12 00:00:00', 3, 3, 6),
+	(17, '2023-08-13 00:00:00', 3, 3, 5),
+	(18, '2023-08-13 00:00:00', 2, 3, 6),
+	(19, '2023-08-14 00:00:00', 2, 3, 2),
+	(20, '2023-09-15 00:00:00', 3, 3, 4),
+	(21, '2023-09-15 00:00:00', 3, 3, 6),
+	(22, '2022-11-02 00:00:00', 1, 4, 4),
+	(23, '2022-11-03 00:00:00', 3, 4, 1),
+	(24, '2022-11-03 00:00:00', 2, 4, 1),
+	(25, '2022-11-04 00:00:00', 2, 4, 1),
+	(26, '2022-11-05 00:00:00', 3, 4, 1),
+	(27, '2022-11-05 00:00:00', 3, 4, 5);
 
--- Дамп структуры для таблица skameyka.project_table
+-- Volcando estructura para tabla skameyka.project_table
 CREATE TABLE IF NOT EXISTS `project_table` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `ProjectName` varchar(64) DEFAULT NULL,
-  `ProjectCode` varchar(16) NOT NULL,
-  `ProjectCustomer` varchar(45) DEFAULT NULL,
-  `IsRelevant` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`id`),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) DEFAULT NULL,
+  `stage` varchar(16) DEFAULT NULL,
+  `code` varchar(16) NOT NULL,
+  `customer` varchar(45) DEFAULT NULL,
+  `relevant` tinyint DEFAULT NULL,
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Таблица-перечень проектов и заказчиков';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Таблица-перечень проектов и заказчиков';
 
--- Дамп данных таблицы skameyka.project_table: ~0 rows (приблизительно)
-/*!40000 ALTER TABLE `project_table` DISABLE KEYS */;
-INSERT INTO `project_table` (`id`, `ProjectName`, `ProjectCode`, `ProjectCustomer`, `IsRelevant`) VALUES
-	(1, 'fgh', '2019-08-28', 'avv', 1),
-	(2, 'asdas', '2020-03-06', '123', 1);
-/*!40000 ALTER TABLE `project_table` ENABLE KEYS */;
+-- Volcando datos para la tabla skameyka.project_table: ~4 rows (aproximadamente)
+INSERT INTO `project_table` (`id`, `title`, `stage`, `code`, `customer`, `relevant`) VALUES
+	(1, 'ЖК Аквамарин', 'ЭП', '2023_10', 'Борисов В.', 1),
+	(2, 'Вилла Тайланд', 'ПД', '2023_12', 'Васильев А.', 1),
+	(3, 'ЖК Пасифик', 'ПД', '2022_06', 'Эйлер А.', 1),
+	(4, 'ДОМ Линейка', 'ЭП', '2022_05', 'Линейка С.', 0);
 
--- Дамп структуры для таблица skameyka.user_table
+-- Volcando estructura para tabla skameyka.user_table
 CREATE TABLE IF NOT EXISTS `user_table` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `UserName` varchar(45) NOT NULL,
-  `IsRelevant` tinyint(4) DEFAULT NULL,
-  `isAdmin` tinyint(4) DEFAULT NULL,
-  `Password` varchar(50) DEFAULT NULL,
-  `Name` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(45) NOT NULL,
+  `relevant` tinyint DEFAULT NULL,
+  `admin` tinyint DEFAULT NULL,
+  `password` varchar(50) DEFAULT NULL,
+  `fullname` varchar(45) DEFAULT NULL,
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='База сотрудников организации';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='База сотрудников организации';
 
--- Дамп данных таблицы skameyka.user_table: ~2 rows (приблизительно)
-/*!40000 ALTER TABLE `user_table` DISABLE KEYS */;
-INSERT INTO `user_table` (`id`, `UserName`, `IsRelevant`, `isAdmin`, `Password`, `Name`) VALUES
-	(1, 'artem', 1, 1, '123', 'Тюбаев Артём'),
-	(2, 'Катя Ворожба', 1, NULL, NULL, NULL);
-/*!40000 ALTER TABLE `user_table` ENABLE KEYS */;
+-- Volcando datos para la tabla skameyka.user_table: ~3 rows (aproximadamente)
+INSERT INTO `user_table` (`id`, `username`, `relevant`, `admin`, `password`, `fullname`) VALUES
+	(1, 'artem', 1, 1, '123', 'Артём Тюбаев'),
+	(2, 'evgen', 1, 1, '123', 'Бурлака Евгений'),
+	(3, 'olga123', 1, 0, '123', 'Ольга Переделкина');
 
+/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

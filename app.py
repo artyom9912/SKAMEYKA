@@ -7,7 +7,7 @@ import pandas as pd
 from flask_caching import Cache
 from sqlalchemy import create_engine
 
-f = open('data.json')
+f = open('config.json')
 config = json.load(f)
 engine = create_engine(f'mysql+pymysql://{config["username"]}:{config["psswd"]}@{config["ip"]}/{config["db"]}')
 

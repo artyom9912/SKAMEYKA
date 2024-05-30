@@ -67,17 +67,30 @@ def DATABASE(dbDF):
         ], className='db line'),
         html.Div([
         html.Div([
-            html.Div('Настройки', style={'margin-bottom': '10px'}),
+            html.Div('Группировка'.upper(), style={'margin-bottom': '10px','margin-top': '10px', 'font-weight':'700px', 'font-size':'18px','color':'black'}),
             dbc.Form([
-            dcc.Dropdown(id='DayFilter', placeholder='ДД', style={'width':'70px', 'margin-right':'6px'}, disabled=True,
-                         options=[{'label': i, 'value': i} for i in dbDF['ДД'].unique()]+[{'label': '✱', 'value': 'Все'}]),
-            dcc.Dropdown(id='MonthFilter', placeholder='ММ', style={'width':'70px', 'margin-right':'6px'}, disabled=True,
-                         options=[{'label': i, 'value': i} for i in dbDF['ММ'].unique()]+[{'label': '✱', 'value': 'Все'}], ),
-            dcc.Dropdown(id='YearFilter', placeholder='ГОД', style={'width':'85px', 'margin-right':'6px'},
-                         options=[{'label': i, 'value': i} for i in dbDF['ГОД'].unique()]+[{'label': '✱', 'value': 'Все'}], ),], inline=True),
-            dcc.Dropdown(id='UserFilter',placeholder='Сотрудник', options=[{'label': i, 'value': i} for i in dbDF['СОТРУДНИК'].unique()]+[{'label': '[Все сотрудники]', 'value': 'Все'}]),
-            dcc.Dropdown(id='ProjectFilter',placeholder='Проект', options=[{'label': i, 'value': i} for i in dbDF['ПРОЕКТ'].unique()]+[{'label': '[Все проекты]', 'value': 'Все'}]),
-            dcc.Dropdown(id='CustomerFilter',placeholder='Заказчик', options=[{'label': i, 'value': i} for i in dbDF['ЗАКАЗЧИК'].unique()]+[{'label': '[Все заказчики]', 'value': 'Все'}]),
+                dbc.Row([
+                    dbc.Col([
+                        dcc.Dropdown(id='DayFilter', placeholder='ДД', style={'width': '70px', 'margin-right': '6px','display':'inline-block'},
+                                     disabled=True,
+                                     options=[{'label': i, 'value': i} for i in dbDF['ДД'].unique()] + [
+                                         {'label': '✱', 'value': 'Все'}]),
+                        dcc.Dropdown(id='MonthFilter', placeholder='ММ', style={'width': '70px', 'margin-right': '6px','display':'inline-block'},
+                                     disabled=True,
+                                     options=[{'label': i, 'value': i} for i in dbDF['ММ'].unique()] + [
+                                         {'label': '✱', 'value': 'Все'}], ),
+                        dcc.Dropdown(id='YearFilter', placeholder='ГОД', style={'width': '85px', 'margin-right': '6px','display':'inline-block'},
+                                     options=[{'label': i, 'value': i} for i in dbDF['ГОД'].unique()] + [
+                                         {'label': '✱', 'value': 'Все'}], ), ], ),
+                    ])
+                ]),
+                dbc.Row([
+                    dbc.Col([
+                    dcc.Dropdown(id='UserFilter',placeholder='Сотрудник', options=[{'label': i, 'value': i} for i in dbDF['СОТРУДНИК'].unique()]+[{'label': '[Все сотрудники]', 'value': 'Все'}]),
+                    dcc.Dropdown(id='ProjectFilter',placeholder='Проект', options=[{'label': i, 'value': i} for i in dbDF['ПРОЕКТ'].unique()]+[{'label': '[Все проекты]', 'value': 'Все'}]),
+                    dcc.Dropdown(id='CustomerFilter',placeholder='Заказчик', options=[{'label': i, 'value': i} for i in dbDF['ЗАКАЗЧИК'].unique()]+[{'label': '[Все заказчики]', 'value': 'Все'}]),
+                    ]),
+                ]),
         ], className='cloud'),
         html.Button('Сбросить', className='clean', id='refresh')
         ], className='filters line'),

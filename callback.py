@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from dash import dcc
 from dash.dependencies import Input, Output, State
 from app import appDash, calendar_cache, WEEKDAYS, engine, dbDF, cache
-# from clickhouse_driver import connect
+from sqlalchemy import text
 import dash
 from time import sleep
 from dash import html
@@ -229,8 +229,8 @@ def SaveCalendar(n_clicks, old):
             html.Div([html.Span('😬', className='symbol emoji'), 'Нет изменений'], className='cloud line popup white',hidden=False)]
     try:
         for sql in calendar_cache:
-            con.execute(sql)
-
+            con.execute(text(sql))
+        con.commit()
         for i in range(0, len(calendar_cache)): del calendar_cache[0]
         return old + [html.Div([html.Span('✔', className='symbol'), 'Успешно сохранено'], className='cloud line popup green', hidden=False)]
 
@@ -575,8 +575,9 @@ def UpdateDict(n_clicks1, n_clicks2, old, head, tab):
 
     # print(sql)
     CACHE.clear()
-    if sql != '': con.execute(sql)
-    if sql2 != '': con.execute(sql2)
+    if sql != '': con.execute(text(sql))
+    if sql2 != '': con.execute(text(sql2))
+    con.commit()
 
     if INSERT or UPDATE:
         return old + [
